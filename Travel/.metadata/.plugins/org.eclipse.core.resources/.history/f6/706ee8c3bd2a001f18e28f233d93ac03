@@ -1,0 +1,14 @@
+package com.employee.service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.employee.exception.DepartmentException;
+import com.employee.exception.EmployeeException;
+import com.employee.modal.Employee;
+
+public interface EmployeeService {
+	public Object addEmployee(Object emps)throws EmployeeException,DepartmentException;
+	public Object findEligibleEmployees(LocalDate date)throws EmployeeException;
+}
+

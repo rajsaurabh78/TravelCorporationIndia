@@ -1,0 +1,94 @@
+package com.employee.service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.employee.exception.DepartmentException;
+import com.employee.exception.EmployeeException;
+import com.employee.modal.Department;
+import com.employee.modal.Employee;
+import com.employee.modal.EmployeeDTO;
+import com.employee.modal.EmployeeResponseDto;
+import com.employee.repository.DepartmentRepo;
+import com.employee.repository.EmployeeRepo;
+@Service
+public class EmployeeServiceImpl implements EmployeeService{
+	
+	@Autowired
+	private EmployeeRepo employeeRepo;
+	
+	@Autowired
+	private DepartmentRepo departmentRepo;
+	
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy");
+	
+    private String capitalizeFirstLetter(String date) {
+        String[] parts = date.split("-");
+        parts[0] = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1);
+        return String.join("-", parts);
+    }
+	
+	@Override
+	public String addEmployee(List<EmployeeDTO> empList) throws EmployeeException, DepartmentException {
+		
+		for (EmployeeDTO dto : empList) {
+            Department department = departmentRepo.findByName(dto.getDepartment());
+            if (department == null) {
+                department = new Department();
+                department.setName(dto.getDepartment());
+                departmentRepo.save(department);
+            }
+
+            Employee employee = new Employee();
+            employee.setEmpName(dto.getEmpName());
+            employee.setDepartment(department);
+            employee.setAmount(dto.getAmount());
+            employee.setCurrency(dto.getCurrency());
+            employee.setJoiningDate(LocalDate.parse( capitalizeFirstLetter(dto.getJoiningDate()), formatter));
+            employee.setExitDate(LocalDate.parse(capitalizeFirstLetter(dto.getExitDate()), formatter));
+
+            employeeRepo.save(employee);
+		}
+	        return "Employees saved successfully";
+		
+	}
+
+	@Override
+	public Object findEligibleEmployees(String date) throws EmployeeException {
+
+		 LocalDate givenDate = LocalDate.parse(capitalizeFirstLetter(date), formatter);
+	        List<Employee> employees = employeeRepo.findByJoiningDateBeforeAndExitDateAfter(givenDate, givenDate);
+
+	        Map<String, List<Map<String, Object>>> groupedByCurrency = employees.stream()
+	                .collect(Collectors.groupingBy(Employee::getCurrency,
+	                        Collectors.mapping(e -> {
+	                            Map<String, Object> map = new HashMap<>();
+	                            map.put("empName", e.getEmpName());
+	                            map.put("amount", e.getAmount());
+	                            return map;
+	                        }, Collectors.toList())));
+
+	        List<Map<String, Object>> data = new ArrayList<>();
+	        groupedByCurrency.forEach((currency, emps) -> {
+	            Map<String, Object> map = new HashMap<>();
+	            map.put("currency", currency);
+	            map.put("employees", emps);
+	            data.add(map);
+	        });
+
+	        EmployeeResponseDto response = new EmployeeResponseDto();
+	        response.setErrorMessage("");
+	        response.setData(data);
+	        return response;
+		
+	}
+
+}

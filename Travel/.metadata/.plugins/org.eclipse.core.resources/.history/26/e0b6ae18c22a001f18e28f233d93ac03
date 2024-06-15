@@ -1,0 +1,57 @@
+package com.employee.service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.employee.exception.DepartmentException;
+import com.employee.exception.EmployeeException;
+import com.employee.modal.Department;
+import com.employee.modal.Employee;
+import com.employee.modal.EmployeeDTO;
+import com.employee.repository.DepartmentRepo;
+import com.employee.repository.EmployeeRepo;
+@Service
+public class EmployeeServiceImpl implements EmployeeService{
+	
+	@Autowired
+	private EmployeeRepo employeeRepo;
+	
+	@Autowired
+	private DepartmentRepo departmentRepo;
+
+	@Override
+	public String addEmployee(List<EmployeeDTO> empList) throws EmployeeException, DepartmentException {
+		
+//		 List<Employee> employees = request.get("employees");
+
+		for (EmployeeDTO dto : empList) {
+            Department department = departmentRepo.findByName(dto.getDepartment());
+            if (department == null) {
+                department = new Department();
+                department.setName(dto.getDepartment());
+                departmentRepo.save(department);
+            }
+
+            Employee employee = new Employee();
+            employee.setEmpName(dto.getEmpName());
+            employee.setDepartment(department);
+            employee.setAmount(dto.getAmount());
+            employee.setCurrency(dto.getCurrency());
+            employee.setJoiningDate(LocalDate.parse(dto.getJoiningDate()));
+            employee.setExitDate(LocalDate.parse(dto.getExitDate()));
+
+            employeeRepo.save(employee);
+	        return "Employees saved successfully";
+		}
+	}
+
+	@Override
+	public Object findEligibleEmployees(LocalDate date) throws EmployeeException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

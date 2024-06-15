@@ -1,0 +1,52 @@
+package com.employee.service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.employee.exception.DepartmentException;
+import com.employee.exception.EmployeeException;
+import com.employee.modal.Department;
+import com.employee.modal.Employee;
+import com.employee.repository.DepartmentRepo;
+import com.employee.repository.EmployeeRepo;
+@Service
+public class EmployeeServiceImpl implements EmployeeService{
+	
+	@Autowired
+	private EmployeeRepo employeeRepo;
+	
+	@Autowired
+	private DepartmentRepo departmentRepo;
+
+	@Override
+	public String addEmployee(List<Employee> empList) throws EmployeeException, DepartmentException {
+		
+//		 List<Employee> employees = request.get("employees");
+
+	        for (Employee employee : empList) {
+	            Department department = departmentRepo.findByName(employee.getDepartment().getName());
+	            if (department == null) {
+	                department = new Department();
+	                department.setName(employee.getDepartment().getName());
+	                departmentRepository.save(department);
+	            }
+	            employee.setDepartment(department);
+	        }
+
+	        employeeService.saveEmployees(employees);
+	        return ResponseEntity.ok("Employees saved successfully");
+		Object list= employeeRepo.saveAll(emps);
+		return null;
+	}
+
+	@Override
+	public Object findEligibleEmployees(LocalDate date) throws EmployeeException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

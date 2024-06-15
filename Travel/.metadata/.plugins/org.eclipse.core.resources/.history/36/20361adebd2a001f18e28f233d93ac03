@@ -1,0 +1,40 @@
+package com.employee.controller;
+
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.employee.service.EmployeeService;
+
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@RestController
+@RequestMapping("/tci")
+public class EmployeeController {
+	
+	@Autowired
+	private EmployeeService employeeService;
+	
+	@PostMapping("/employee-bonus")
+	public ResponseEntity<Object> addEmployeeController(@Valid @RequestBody Object obj){
+		Object emps=employeeService.addEmployee(obj);
+		return new ResponseEntity<Object>(emps, HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/employee-bonus")
+	public Object findEligibleEmployeesController(@RequestParam("date") LocalDate date) {
+		
+		Object emps=employeeService.findEligibleEmployees(date);
+		return new ResponseEntity<Object>(emps, HttpStatus.OK);
+	}
+	
+
+}

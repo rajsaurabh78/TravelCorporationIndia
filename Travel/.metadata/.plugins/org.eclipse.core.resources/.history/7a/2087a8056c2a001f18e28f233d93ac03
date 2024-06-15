@@ -1,0 +1,26 @@
+package com.employee.modal;
+
+import java.time.LocalDate;
+
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Employee {
+	
+    private Integer id;
+    private String empName;
+    private String currency;
+    private double amount;
+    private LocalDate joiningDate;
+    private LocalDate exitDate;
+    
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+}
