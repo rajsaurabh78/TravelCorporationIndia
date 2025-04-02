@@ -1,6 +1,6 @@
 # Employee Management System
 
-## ER Digram
+## ER Diagram
 ![travel](https://github.com/rajsaurabh78/TravelCorporationIndia/assets/108000350/ac4caa93-4d0f-4ebb-b5d6-f839c2f9acba)
 
 
